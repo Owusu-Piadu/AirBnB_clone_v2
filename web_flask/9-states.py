@@ -1,37 +1,42 @@
 #!/usr/bin/python3
-"""script that starts a Flask web application"""
+"""Starts a Flask web application.
 
-
-# import Flask class from flask module
-# import render_template for rendering templates to browser
-# fetch data from storage engine
-from flask import Flask, render_template
-
+The application listens on 0.0.0.0, port 5000.
+Routes:
+    /states: HTML page with a list of all State objects.
+    /states/<id>: HTML page displaying the given state with <id>.
+"""
 from models import storage
+from flask import Flask
+from flask import render_template
 
-# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
-app.url_map.strict_slashes = False
+
+
+@app.route("/states", strict_slashes=False)
+def states():
+    """Displays an HTML page with a list of all States.
+
+    States are sorted by name.
+    """
+    states = storage.all("State")
+    return render_template("9-states.html", state=states)
+
+
+@app.route("/states/<id>", strict_slashes=False)
+def states_id(id):
+    """Displays an HTML page with info about <id>, if it exists."""
+    for state in storage.all("State").values():
+        if state.id == id:
+            return render_template("9-states.html", state=state)
+    return render_template("9-states.html")
 
 
 @app.teardown_appcontext
-def teardown_db(exception=None):
-    """removes the current SQLAlchemy Session
-    """
-    if storage is not None:
-        storage.close()
+def teardown(exc):
+    """Remove the current SQLAlchemy session."""
+    storage.close()
 
 
-@app.route('/states')
-@app.route('/states/<state_id>')
-def states(state_id=None):
-    """displays a HTML page: inside the tag BODY"""
-    states = storage.all("State")
-    if state_id is None:
-        return render_template('9-states.html', states=states)
-    state = states.get('State.{}'.format(state_id))
-    return render_template('9-states.html', state=state)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")

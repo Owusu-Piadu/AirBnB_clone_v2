@@ -1,61 +1,37 @@
 #!/usr/bin/python3
-"""script that starts a Flask web application"""
-
-
-# import Flask class from flask module
+""" Script that starts a Flask web application """
 from flask import Flask
 
-# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
 
 @app.route('/')
-def index():
-    """display "Hello HBNB!"
-
-    Returns:
-        str: text on the index page
-    """
+def hello_hbnb():
+    """ Print Web """
     return 'Hello HBNB!'
 
 
 @app.route('/hbnb')
-def hbnb_route():
-    """display "HBNB"
-
-    Returns:
-        str: text on the page
-    """
+def hbnb():
+    """ Print Web """
     return 'HBNB'
 
 
 @app.route('/c/<text>')
-def c_route(text):
-    """display "C", followed by the value of the text variable
-
-    Args:
-        text (str): text to be served on the page
-
-    Returns:
-        str: text on the page
-    """
+def c_is_fun(text):
+    """ Print a char C followed by the value of the text variable """
     return 'C {}'.format(text.replace('_', ' '))
 
 
-@app.route('/python', defaults={'text': 'is cool'})
+@app.route('/python')
 @app.route('/python/<text>')
-def python_route(text):
-    """display "Python", followed by the value of the text variable
-
-    Args:
-        text (str): text to be served on the page
-
-    Returns:
-        str: text on the page
-    """
+def python_is_cool(text='is cool'):
+    """ Print Python, followed by the value of the text variable,
+    with default value of text: is cool"""
     return 'Python {}'.format(text.replace('_', ' '))
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
